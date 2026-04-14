@@ -1,0 +1,74 @@
+create database company;
+use company;
+create table employee(
+id int auto_increment primary key,
+name varchar(20),
+age int,
+department varchar(20),
+salary double,
+email varchar(30),
+status boolean
+) ;
+
+insert into employee(name,age,department,salary,email,status) values
+("Nischal Shrestha",18,"Software Design",1500000,"nischal@gmail.com",TRUE),
+("Nirjal Shrestha",20,"Data Science",150000,"nirjal@gmail.com",TRUE),
+("Norman Shrestha",22,"Front End",1200000,"nornaml@gmail.com",TRUE),
+("Nishan Shrestha",18,"Devops",1400000,"nishan@gmail.com",FALSE),
+("Nirjala Shrestha",21,"MLOPS",145000,"nirjala@gmail.com",FALSE);
+
+
+insert into employee(id,name,age,department,salary,email,emp_status) values
+(4,"Nishan Shrestha",18,"Devops",1400000,"nishan@gmail.com",FALSE);
+select * from employee;
+update employee  set salary=80000 where department="Finance";
+UPDATE employee
+SET salary = CASE
+    WHEN department = "IT" THEN salary * 1.20
+    WHEN department = "Finance" THEN salary * 1.15
+    ELSE salary
+END;
+select name,department,salary from employee where salary> 55000;
+select * from employee where status=False;
+update employee set email="norman@gmail.com" where id=3;
+update employee set department="HR" where id=4;
+update employee set salary=450000 where id=5;
+update employee set salary=(salary*(1+15/100)) where department="HR";
+set sql_safe_updates=0;
+UPDATE employee
+SET 
+    name = "Nishan Shrestha",
+    age = 19,
+    email = "nishan_new@gmail.com"
+WHERE id = 4;
+update employee set status=FALSE where salary<550000;
+update employee set name=case id when 4 then "Netra Kumar Shrstha" else name end,
+department=case id when 4 then "Manager" else department end;
+
+
+delete from employee where id=5;
+delete from employee where status=false;
+alter table employee add phone_number varchar(15) after email;
+alter table employee modify column salary decimal(15,2);
+alter table employee rename column status to emp_status;
+update employee set emp_status=true;
+UPDATE employee
+SET salary = salary + 
+    CASE emp_status
+        WHEN 1 THEN 5000
+        WHEN 0 THEN -2000
+    END;
+UPDATE employee
+SET 
+    salary = CASE 
+        WHEN id = 4 THEN 5000 
+        ELSE salary 
+    END,
+    status = CASE 
+        WHEN id = 4 THEN TRUE 
+        ELSE status 
+    END;
+    
+update employee set department =case 
+when id=1 then 'HR'
+when id=6 then "Finance" else department end;

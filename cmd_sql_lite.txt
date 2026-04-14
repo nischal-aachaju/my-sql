@@ -1,0 +1,36 @@
+CREATE DATABASE student_management_system;
+USE student_management_system;
+CREATE TABLE employee(
+id int auto_increment primary key,
+name varchar(20),
+email varchar(20),
+status boolean,
+salary int,
+department varchar(20)
+);
+# add colums after emailphone_number
+alter table employee add phone_number char(10) after email;
+
+# rename table name
+alter table employee rename to employees;
+
+# rename columns name
+alter table employees rename column email to emails;
+
+# delete columns
+alter table employees drop column status;
+
+#  modify datetype of columns
+alter table employees modify column name varchar(30);
+select * from employees;
+
+desc employees;
+insert into employees(name,emails,phone_number,salary,department) values("Nischal","nischal@gmail.com",0987654321,300,"software engineer");
+insert into employees(name,emails,phone_number,salary,department) values("Nornam","norman@gmail.com",0987654331,200,"software engineer");
+insert into employees(name,emails,phone_number,salary,department) values("Anurag","anurag@gmail.com",0947654321,300,"software engineer");
+
+# to delete from table
+delete from employees where id=3;
+
+# to update  datas from table
+update employees set name="Nischal Shrestha" where id=1;
