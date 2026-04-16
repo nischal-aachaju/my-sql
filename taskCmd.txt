@@ -52,12 +52,14 @@ alter table employee add phone_number varchar(15) after email;
 alter table employee modify column salary decimal(15,2);
 alter table employee rename column status to emp_status;
 update employee set emp_status=true;
+
 UPDATE employee
 SET salary = salary + 
     CASE emp_status
         WHEN 1 THEN 5000
         WHEN 0 THEN -2000
     END;
+
 UPDATE employee
 SET 
     salary = CASE 
@@ -69,6 +71,8 @@ SET
         ELSE status 
     END;
     
+
 update employee set department =case 
 when id=1 then 'HR'
+
 when id=6 then "Finance" else department end;
