@@ -20,7 +20,7 @@ alter table employees rename column email to emails;
 # delete columns
 alter table employees drop column status;
 
-#  modify datetype of columns
+#  modify datatype of columns
 alter table employees modify column name varchar(30);
 select * from employees;
 
@@ -34,3 +34,4 @@ delete from employees where id=3;
 
 # to update  datas from table
 update employees set name="Nischal Shrestha" where id=1;
+
