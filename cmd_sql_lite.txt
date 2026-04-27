@@ -35,3 +35,48 @@ delete from employees where id=3;
 # to update  datas from table
 update employees set name="Nischal Shrestha" where id=1;
 
+-----  foreign key   ----------  sql ---
+
+use hello;
+create table customer(
+c_id int primary Key,
+c_name varchar(30),
+c_address varchar(30),
+c_email varchar(30),
+c_phone_number char(10)
+);
+
+create table transactions(
+transaction_id int primary key,
+c_id int,
+amount decimal(10,2),
+transaction_type varchar(20),
+transaction_date date default (curdate())
+-- , foreign key(c_id) references customer(c_id); 
+);
+
+alter table transactions add constraint fk_customer_id foreign key(c_id) references customer(c_id);
+
+show create table transactions;
+insert into customer values(1,"Nischal Shrestha","BiratChowk","nischal@gmail.com","9876543210");
+insert into customer values(2,"Nirjal Shrestha","BiratChowk","nirjal@gmail.com","9876543211"),
+(3,"Ambika Shrestha","BiratChowk","ambika@gmail.com","9876543212");
+
+select * from customer;
+select * from transactions;
+insert into transactions values(1,1,29,"credit",default);
+
+alter table transactions drop constraint fk_customer_id;
+alter table transactions add constraint new_fk_customer_id foreign key (c_id) references customer(c_id) on delete cascade;
+
+DELETE FROM transactions WHERE transaction_id = 1;
+select * from transactions;
+
+-----------------------------
+
+readme.md for foreign key
+
+i create table customer and transactions where transactions has c_id (fk) now if we delete the data from customer then we cant delete bcz there is foreign key linked with customer table. And if we want to delete then we need to delete constraint 
+alter table transactions drop constraint constraint-name; and  alter table transactions add constraint new_constraint-name foreign key (c_id) references customer(c_id) on delete cascade; here on delete casecade is used to delete data from customer data and it also delete all data from transaction table
+
+
