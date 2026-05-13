@@ -168,3 +168,81 @@ join patient on prescription.patientID= patient.patientID
 join doctor on prescription.doctorid=doctor.doctorID;
 select * from patient where dateOfBirth between "1980-01-01"  and "2000-01-01";
 select * from doctor where speciality in ('Cardiology','Neurology');
+
+set sql_safe_updates=0;
+select patientID,sum(amount) as total_amount from billing group by patientID;
+
+select concat(d.firstName," ",d.lastName) as Doctors,count(a.appointmentID) as appointments 
+from doctor d join appointment a on d.doctorID=a.doctorID group by a.appointmentID;
+
+select round(avg(amount),2) as average_bill_amount from billing;
+
+select min(amount) as max_bill_amount from billing;
+
+select concat(d.firstName," ",d.lastName) as Doctors, count(p.prescriptionID) 
+as prescription_count from prescription p join doctor d on d.doctorID=p.doctorID 
+group by p.doctorID having count(p.prescriptionID) >2 ;
+
+select * from prescription;
+insert into prescription (patientID,doctorID,medication,dosage,startDate,endDate) values
+(2,2,"Painkiller","50 mg twice",curdate(),addDate(curdate(),INTERVAL 20 day) );
+
+select * from medicalrecord;
+INSERT INTO medicalrecord (patientID, diagnosis, treatment, Notes) VALUES
+(2, 'Diabetes',      'Insulin Therapy',   'Monitor blood sugar daily'),
+(3, 'Hypertension',  'Medication',        'Reduce salt intake'),
+(4, 'Asthma',        'Inhaler',           'Avoid dust and smoke'),
+(5, 'Diabetes',      'Oral Medication',   'Check HbA1c monthly'),
+(6, 'Flu',           'Rest and Fluids',   'Stay hydrated');
+desc medicalrecord;
+
+select diagnosis,count(diagnosis) as number_of_patients
+from medicalRecord group by (diagnosis);
+
+
+select concat(p.firstName, " " ,p.lastName) as patientName, m.diagnosis 
+from medicalRecord m join patient p on p.patientID=m.patientID;
+select * from appointment;
+
+select a.appointmentID,concat_ws(" ",p.firstName,p.lastName,p.patientID) as PatientName,
+concat(d.firstName, " " ,d.lastName," ",d.doctorID) as DoctorName, a.reason,a.status 
+from appointment a join patient p on p.patientID=a.patientID 
+join doctor d on d.doctorID=a.doctorID ;
+
+
+select concat_ws(" ",p.prescriptionID, p.medication,p.dosage,p.startDate,p.endDate )
+ as prescriptions , concat(pt.firstName, " " ,pt.lastName) as patientName,
+concat(d.firstName, " " ,d.lastName) as DoctorName
+from prescription p join patient pt on pt.patientID= p.patientID 
+join doctor d on d.doctorID=d.doctorID ;
+
+select * from billing;
+select * from patient p left join billing b  on p.patientID=b.patientID  ;
+select * from doctor;
+select * from appointment;
+delete from appointment where doctorid=3;
+select * from doctor d left join appointment a on d.doctorID=a.doctorID;
+
+select concat(p.firstname," ",p.lastName) as "Patient Name", sum(b.amount) as "Total cost"
+from patient p join billing b on p.patientID=b.patientID group by (p.patientID);
+
+select concat_ws("  ", a.appointmentdate,a.reason,a.status) as "Date    Reason   Status ", 
+concat_ws("   ",p.gender,p.phone) as "Gender   Contact" 
+from appointment a  join patient p on a.patientID=p.patientID;
+
+
+select * from appointment a where appointmentDate > "2026-01-01" and status ="scheduled";
+
+select * from patient where firstName like "a%";
+
+select * from billing where amount between 500 and 2000;
+
+select * from prescription where medication in ( 'Paracetamol', 'Ibuprofen', 'Amoxicillin') ;
+
+select * from medicalrecord where treatment like "%surgery%" or treatment is not null;
+select * from patient;
+desc patient;
+alter table patient add column BloodGroup varchar(5);
+
+alter table doctor modify column phone varchar(20);
+desc doctor;

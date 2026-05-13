@@ -73,7 +73,7 @@ select employee.d_id,department.d_name,max(salary) as max_salary ,min(salary) as
 from employee join department on department.d_id=employee.d_id group by employee.d_id, department.d_name ; -- 4qn
 
 select employee.d_id,department.d_name,sum(salary) as total_salary 
-from employee join department on department.d_id=employee.d_id group by employee.d_id, department.d_name having sum(salary)>100000; -- 5qn
+from employee join department on department.d_id=employee.d_id group by employee.d_id, department.d_name having sum(salary)>100000 ; -- 5qn
 
 select e.d_id,d.d_name,avg(salary) as average_salary from employee e 
 join department d on d.d_id=e.d_id group by e.d_id having avg(salary) >60000 ; -- 6qn; 
