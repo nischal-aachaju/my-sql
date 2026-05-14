@@ -9,7 +9,6 @@ dateOfBirth date,
 gender enum("male","female","others"),
 contactInfo char(10)
 );
-
 INSERT INTO patient VALUES
 (6, 'Aarav', 'Sharma', '1990-03-15', 'male', '9801234567'),
 (2, 'Priya', 'Thapa', '1985-07-22', 'female', '9812345678'),
@@ -33,7 +32,6 @@ INSERT INTO doctor VALUES
 (5, 'Mina', 'Tamang', 'Pediatrics', '9884567890', 'mina@gmail.com'),
 (6, 'Dipak', 'Adhikari', 'Dermatology', '9895678901', 'dipak@gmail.com');
 alter table doctor modify email varchar(50);
-
 create table appointment (
 appointment int primary key,
 patientID int,
