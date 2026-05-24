@@ -170,18 +170,32 @@ select * from patient where dateOfBirth between "1980-01-01"  and "2000-01-01";
 select * from doctor where speciality in ('Cardiology','Neurology');
 
 set sql_safe_updates=0;
-select patientID,sum(amount) as total_amount from billing group by patientID;
 
-select concat(d.firstName," ",d.lastName) as Doctors,count(a.appointmentID) as appointments 
-from doctor d join appointment a on d.doctorID=a.doctorID group by a.appointmentID;
+select 
+	patientID, sum(amount) as total
+from billing group by patientID;
 
-select round(avg(amount),2) as average_bill_amount from billing;
+select 
+	concat(doctor.firstName," ",doctor.lastName) as Doctors,
+    count(appointment.appointmentID) as appointments 
+from doctor  
+join appointment 
+on doctor.doctorID=appointment.doctorID group by doctor.doctorID;
 
-select min(amount) as max_bill_amount from billing;
+select avg(amount)
+ as avg_amount
+ from billing;
 
-select concat(d.firstName," ",d.lastName) as Doctors, count(p.prescriptionID) 
-as prescription_count from prescription p join doctor d on d.doctorID=p.doctorID 
-group by p.doctorID having count(p.prescriptionID) >2 ;
+select max(amount) 
+as max_bill_amount 
+from billing;
+
+select 
+	concat(d.firstName," ",d.lastName) as Doctors, 
+	count(p.prescriptionID) 
+as prescription_count 
+from prescription p join doctor d on d.doctorID=p.doctorID 
+group by p.doctorID having count(p.prescriptionID) >1 ;
 
 select * from prescription;
 insert into prescription (patientID,doctorID,medication,dosage,startDate,endDate) values
@@ -196,53 +210,195 @@ INSERT INTO medicalrecord (patientID, diagnosis, treatment, Notes) VALUES
 (6, 'Flu',           'Rest and Fluids',   'Stay hydrated');
 desc medicalrecord;
 
-select diagnosis,count(diagnosis) as number_of_patients
-from medicalRecord group by (diagnosis);
+select diagnosis,count(diagnosis) as record_count
+from medicalRecord 
+group by (diagnosis);
 
 
-select concat(p.firstName, " " ,p.lastName) as patientName, m.diagnosis 
-from medicalRecord m join patient p on p.patientID=m.patientID;
-select * from appointment;
+select concat(p.firstName, " " ,p.lastName) as patientName, 
+m.diagnosis from medicalRecord m 
+join patient p on p.patientID=m.patientID;
 
-select a.appointmentID,concat_ws(" ",p.firstName,p.lastName,p.patientID) as PatientName,
-concat(d.firstName, " " ,d.lastName," ",d.doctorID) as DoctorName, a.reason,a.status 
+
+
+
+select 
+	a.appointmentID,concat(p.firstName," " ,p.lastName) as PatientName,
+	concat(d.firstName, " " ,d.lastName) as DoctorName, a.reason,a.status 
 from appointment a join patient p on p.patientID=a.patientID 
 join doctor d on d.doctorID=a.doctorID ;
 
 
-select concat_ws(" ",p.prescriptionID, p.medication,p.dosage,p.startDate,p.endDate )
+select concat(p.prescriptionID," ", p.medication,"  ",p.dosage,"  ",p.startDate,"  ",p.endDate )
  as prescriptions , concat(pt.firstName, " " ,pt.lastName) as patientName,
 concat(d.firstName, " " ,d.lastName) as DoctorName
 from prescription p join patient pt on pt.patientID= p.patientID 
 join doctor d on d.doctorID=d.doctorID ;
 
 select * from billing;
-select * from patient p left join billing b  on p.patientID=b.patientID  ;
+
+select * from patient  
+left join billing  on 
+patient.patientID=billing.patientID;
+
 select * from doctor;
 select * from appointment;
 delete from appointment where doctorid=3;
 select * from doctor d left join appointment a on d.doctorID=a.doctorID;
 
-select concat(p.firstname," ",p.lastName) as "Patient Name", sum(b.amount) as "Total cost"
-from patient p join billing b on p.patientID=b.patientID group by (p.patientID);
+select concat(p.firstname," ",p.lastName) as Patient_name, 
+sum(b.amount) as Total_bill
+from patient p join billing b on p.patientID=b.patientID 
+group by (p.patientID) ;
 
-select concat_ws("  ", a.appointmentdate,a.reason,a.status) as "Date    Reason   Status ", 
-concat_ws("   ",p.gender,p.phone) as "Gender   Contact" 
+select concat( a.appointmentdate,a.reason,a.status) 
+as appointment, p.gender as gender,p.phone as contact
 from appointment a  join patient p on a.patientID=p.patientID;
 
 
-select * from appointment a where appointmentDate > "2026-01-01" and status ="scheduled";
+select * from appointment 
+where appointmentDate > "2026-01-01" and  status ="Scheduled";
 
 select * from patient where firstName like "a%";
 
 select * from billing where amount between 500 and 2000;
 
-select * from prescription where medication in ( 'Paracetamol', 'Ibuprofen', 'Amoxicillin') ;
+select * from prescription 
+where medication in ( 'Paracetamol', 'Ibuprofen', 'Amoxicillin') ;
 
-select * from medicalrecord where treatment like "%surgery%" or treatment is not null;
+SELECT  * FROM medicalrecord 
+WHERE treatment LIKE "%surgery%" OR treatment IS NOT NULL;
 select * from patient;
+
 desc patient;
+
+
 alter table patient add column BloodGroup varchar(5);
 
-alter table doctor modify column phone varchar(20);
-desc doctor;
+ALTER TABLE doctor MODIFY COLUMN phone VARCHAR(20);
+DESC doctor;
+
+delimiter //
+CREATE PROCEDURE doctorPhone(IN p_doctorID INT, out p_phone int)
+BEGIN
+    SELECT phone INTO p_phone FROM doctor WHERE doctorID = p_doctorID;
+END //
+delimiter ;
+
+drop procedure  doctorPhone;
+CALL doctorPhone(5,@doc_phone);
+
+select @doc_phone as "Doctor Number";
+
+select * from doctor;
+
+select * from billing;
+
+START TRANSACTION;
+update  billing set amount=amount+500 where billingID=2;
+savepoint  money_added;
+
+update  billing set amount=amount+700 where billingID=3;
+rollback to money_added;
+commit;	
+
+
+-- select * from patient;
+
+delimiter //
+create procedure searchName( in p_id int, sex varchar(20))
+begin
+	select * from patient where patientID=p_id and gender=sex;
+end //
+delimiter ;
+
+drop procedure searchName;
+set sql_safe_updates=0;
+call searchName(1,female);
+
+delimiter //
+CREATE PROCEDURE doctorPhone(IN p_doctorID INT, out p_phone varchar(10), out f_name varchar(30))
+BEGIN
+    SELECT phone,firstName INTO p_phone,f_name FROM doctor WHERE doctorID = p_doctorID;
+END //
+delimiter ;
+
+drop procedure  doctorPhone;
+CALL doctorPhone(4,@doc_phone,@f_name);
+select * from doctor;
+select @f_name as first_name, @doc_phone as contact;
+select * from doctor where phone=@doc_phone;
+
+use hello;
+
+select * from orders;
+
+delimiter //
+create procedure amount_fltr(IN amt int)
+begin 
+	if amt> 3000 then
+    select "high";
+    elseIf amt> 2500 then
+    select "medium";
+    else 
+    select "low";
+    end IF;
+end //
+delimiter ;
+
+call amount_fltr(1000);
+
+delimiter //
+create procedure amount_fltr(IN amt int)
+begin 
+ 
+	if amt> 3000 then
+    select "high";
+    elseIf amt> 2500 then
+    select "medium";
+    else 
+    select "low";
+    end IF;
+end //
+delimiter ;
+
+select *  from orders;
+
+-- execption handeling
+-- declare continue
+
+
+-- Try catch 
+
+use human_resources;
+
+select * from customer;
+use human_resources;
+insert into customer values(11,"Norman singh","male","normansingh@gmail.com","9876543210","Kathmandu",curdate())
+
+delimiter //
+create procedure addrecords(IN c_id int,IN C_name varchar(100),IN sex varchar(8), IN email varchar(150),IN contact varchar(15),IN city varchar(100) )
+    declare user_name varchar (30) ;
+    set user_name="Samir";
+    
+    declare exit handler for 1146;
+    begin
+		select "Select query failed" as status ;
+    end;
+	declare exit handler for 10632;
+    begin
+		select "Insertion faild failed" as status ;
+    end;
+	insert into customer values(c_id,C_name,sex,email,contact,city,curdate());
+    select "Insertion succeccfully" as status ;
+	update  customer set customer_name="ram " where customer_id=c_id;
+    select "Update succeccfully" as status ;
+ delimiter //
+
+drop procedure addrecords;
+call addrecords(14,"Ram Kaji Shrestha ","male","ram12@gmail.com","9812345678","Biratnagar");
+
+select * from customers;
+update  customer set customer_name="ram " where customer_id=200;
+
+
