@@ -127,3 +127,12 @@ end //
 delimiter ;
 
 drop procedure deletenotice;
+use test;
+create table users(
+u_id int primary key auto_increment,
+username varchar(30),
+password varchar(14)
+);
+select * from users;
+
+drop table users;
